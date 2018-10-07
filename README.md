@@ -18,17 +18,21 @@ sudo apt-get install jackd
 
 Then install the package using
 ```
-pip install ...
+pip install git+https://github.com/basil-huber/BlueLooper.git --process-dependency-links
 ```
 
 # Usage
 The configuration 
 
 Start a jackd server with your recording and playback device:
-```jackd -d alsa -P hw:Amplifier -C hw:Amplifier & ```
+```
+jackd -d alsa -P hw:Amplifier -C hw:Amplifier &
+```
 
 Start sooperlooper:
-```sooperlooper -q &```
+```
+slgui &
+```
 
 Connect your recording and playback devices to sooperlooper:
 ```
@@ -36,12 +40,6 @@ jack_connect system:capture_1 sooperlooper:common_in_1
 jack_connect system:capture_2 sooperlooper:common_in_2
 jack_connect sooperlooper:common_out_1 system:playback_1
 jack_connect sooperlooper:common_out_2 system:playback_2
-```
-
-
-Start the sooperlooper gui:
-```
-slgui &
 ```
 
 Then start the python application that connects the pedal to sooperlooper as super user
