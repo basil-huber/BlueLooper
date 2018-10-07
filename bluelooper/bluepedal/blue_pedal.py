@@ -40,11 +40,19 @@ class BluePedal (btle.DefaultDelegate):
             return self.p.waitForNotifications(timeout);
         return False
 
-
     def __scan(self):
-        scanner = btle.Scanner(0)
-        devices = scanner.scan(5.0)
-        address = None
+        for interface in range(0,10):
+            try:
+                devices = btle.Scanner(interface).scan(5)
+                break
+            except btle.BTLEInterfaceInvalidError:
+                continue
+            except btle.BTLEInterfaceSupportError:
+                continue
+            except btle.BTLEPermissionError:
+                raise ValueError('Permission for hci%d denied: please run as sudo' % (interface))
+        else:
+            raise ValueError('No valid bluetooth low energy interface found')
 
         for dev in devices:
             for (adtype, desc, value) in dev.getScanData():
