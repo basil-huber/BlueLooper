@@ -37,6 +37,7 @@ class LooperOSC:
            self.state = LooperOSC.State.UNKNOWN
            self.ping_event = Event()
            self.state_event = Event()
+           self.state_callback = None
         except liblo.AddressError:
             print("error")
 
@@ -51,8 +52,10 @@ class LooperOSC:
         self.request_state()
 
     def register_state_update(self):
-        liblo.send(self.target, "/sl/-1/register_update", "state", self.home_url, "/state")
-        # currently not working!
+        liblo.send(self.target, "/sl/-1/register_auto_update", "state", 100, self.home_url, "/state")
+
+    def set_state_callback(self, callback):
+        self.state_callback = callback
 
     def send_sldown(self,command):
         liblo.send(self.target, "/sl/-1/down",command)
@@ -110,6 +113,8 @@ class LooperOSC:
         except ValueError:
             self.state = LooperOSC.State.UNKNOWN
         self.state_event.set()
+        if self.state_callback:
+            self.state_callback(self.state)
 
     def receive_ping(self, path, answer):
         self.ping_event.set()
