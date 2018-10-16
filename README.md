@@ -42,7 +42,10 @@ jack_connect sooperlooper:common_out_1 system:playback_1
 jack_connect sooperlooper:common_out_2 system:playback_2
 ```
 
-Then start the python application that connects the pedal to sooperlooper as super user
+Then start the python application that connects the pedal to sooperlooper as super user:
+```bash
+sudo bluelooper
+```
 
 # Troubleshooting
 ## Connecting to pedal
