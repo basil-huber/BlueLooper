@@ -1,5 +1,5 @@
-from .bluepedal import BluePedal
-from .sooperlooper import LooperOSC
+from bluelooper.bluepedal import BluePedal
+from bluelooper.sooperlooper import LooperOSC
 from time import sleep
 
 
@@ -55,4 +55,7 @@ def main():
     ###########################
     while True:
         pedal.waitForNotifications()
+
+if __name__ == '__main__':
+    main()
 
