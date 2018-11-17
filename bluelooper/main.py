@@ -35,7 +35,6 @@ def main():
     #     Set up looper       #
     ###########################
     with Looper() as looper:
-        print(looper)
         looper.register_state_update() # registration does currently not work
 
         ###########################
@@ -54,10 +53,9 @@ def main():
         ###########################
         #       Main loop         #
         ###########################
-
         while looper.sooperlooper.is_alive():
             pedal.waitForNotifications()
-        print('good bye')
+
 if __name__ == '__main__':
     main()
 

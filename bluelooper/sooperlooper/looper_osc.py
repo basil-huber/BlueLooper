@@ -28,7 +28,6 @@ class Looper:
         MUTED_OFF = 20  # undocumented
 
     def __init__(self, target_ip="localhost", home_ip="localhost", home_port="9952", on_exit=None):
-
         self.state = Looper.State.UNKNOWN
         self.ping_event = Event()
         self.state_event = Event()
@@ -56,6 +55,10 @@ class Looper:
         return self
 
     def __exit__(self, *exc):
+        # terminate slgui
+        self.sooperlooper.terminate()
+        # try to shutdown sooperlooper politely
+        self.quit()
         self.stop_jack()
 
     def start_jack(self):
@@ -161,17 +164,24 @@ class Looper:
     def receive_ping(self, path, answer):
         self.ping_event.set()
 
+
 class SooperLooper(threading.Thread):
+
     def __init__(self, gui=True, on_exit=None):
         super().__init__()
         self.gui = gui
         self.on_exit = on_exit
+        self.process = None
 
     def run(self):
         if self.gui:
-            self.sooperlooper = subprocess.run("slgui")
+            self.process = subprocess.Popen("slgui")
         else:
-            self.sooperlooper = subprocess.run("sooperlooper")
+            self.process = subprocess.Popen("sooperlooper")
+        self.process.communicate()
         if self.on_exit:
             self.on_exit()
+
+    def terminate(self):
+        self.process.terminate()
 
