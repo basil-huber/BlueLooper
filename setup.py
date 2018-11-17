@@ -8,6 +8,6 @@ setup(name='bluelooper',
       # license='',
       packages=['bluelooper', 'bluelooper.bluepedal', 'bluelooper.sooperlooper'],
       dependency_links=['git+https://github.com/basil-huber/bluepy.git#egg=bluepy-1.2.0.1'],
-      install_requires=['bluepy==1.2.0.1', 'pyliblo'],
+      install_requires=['bluepy==1.2.0.1', 'pyliblo', 'JACK-Client'],
       entry_points = {'console_scripts': ['bluelooper=bluelooper.main:main']},
       zip_safe=False)

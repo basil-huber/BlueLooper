@@ -1,1 +1,1 @@
-from .looper_osc import LooperOSC
+from .looper_osc import Looper
