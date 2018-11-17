@@ -35,7 +35,6 @@ def main():
     #     Set up looper       #
     ###########################
     with Looper() as looper:
-        looper.register_state_update() # registration does currently not work
 
         ###########################
         #   Set up blue_pedal     #

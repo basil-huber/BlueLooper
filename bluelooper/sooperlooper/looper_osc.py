@@ -52,6 +52,7 @@ class Looper:
         self.sooperlooper.start()
         self.connect_jack()
         self.connect()
+        self.register_state_update()
         return self
 
     def __exit__(self, *exc):
