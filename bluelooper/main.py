@@ -1,6 +1,6 @@
 from bluelooper.bluepedal import BluePedal
 from bluelooper.sooperlooper import Looper
-from time import sleep
+from threading import Event
 
 
 def set_pedal_leds(pedal, looper_state):
@@ -27,20 +27,34 @@ def button_callback(looper, pedal, button_id, button_state):
         elif button_state == BluePedal.RELEASED_LONG:
             looper.reset()
 
-
+def set_event(event):
+    """Callback for looper connected: set event"""
+    event.set()
 
 def main():
+    looper_connected_event = Event()
+
+    def looper_connected():
+        looper_connected_event.set()
+        print('Looper connected!!!!!!!!!!!!!!')
+
+    pedal_connected_event = Event()
+
+    def pedal_connected():
+        print('pedal connected!!!!!!!!!!!!!!')
+        set_event(pedal_connected_event)
+        print('!!!!!!!!!!!!!!pedal connected')
 
     ###########################
-    #     Set up looper       #
+    # Set up looper and pedal #
     ###########################
-    with Looper() as looper:
-
-        ###########################
-        #   Set up blue_pedal     #
-        ###########################
-        pedal = BluePedal("BLUE")
-        pedal.connect()
+    with Looper(on_connected=looper_connected) as looper,\
+            BluePedal("BLUE", on_connected=pedal_connected) as pedal:
+        #######################################
+        # wait for looper and pedal connected #
+        #######################################
+        looper_connected_event.wait()
+        pedal_connected_event.wait()
 
         ###########################
         # Connect pedal to looper #
@@ -53,7 +67,10 @@ def main():
         #       Main loop         #
         ###########################
         while looper.sooperlooper.is_alive():
-            pedal.waitForNotifications()
+            #pedal.waitForNotifications()
+            import  time
+            time.sleep(1)
+
 
 if __name__ == '__main__':
     main()

@@ -1,8 +1,10 @@
 import struct
 import time
 from bluepy import btle
+from threading import Event, Thread
 
-class BluePedal (btle.DefaultDelegate):
+
+class BluePedal (btle.DefaultDelegate, Thread):
 
     __HNDL_BUTTON0 = 0x0e
     __HNDL_BUTTON1 = 0x11
@@ -15,29 +17,46 @@ class BluePedal (btle.DefaultDelegate):
     LED_ON = 2
     LED_BLINKING = 3
 
-    def __init__(self,pedal_name):
+    def __init__(self, pedal_name, on_connected=None, on_disconnected=None):
+        Thread.__init__(self)
         btle.DefaultDelegate.__init__(self)
-        self.button_callback = None
         self.pedal_name = pedal_name
         self.p = None
+
+        # callbacks
+        self.on_disconnected = on_disconnected
+        self.on_connected = on_connected
+        self.button_callback = None
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    def run(self):
+        self.connect()
+        while True:
+            self.waitForNotifications()
 
     def connect(self):
         while True:
             address = self.__scan()
-            if address != None:
+            if address:
                 break
             else:
                 print("[BluePedal: pedal not found, trying again")
                 time.sleep(0.1)
 
-        if address != None:
-            return self.__connect(address)
-        else:
-            return None
+        self.__connect(address)
+
+        if self.on_connected:
+            self.on_connected()
 
     def waitForNotifications(self, timeout = 1):
-        if self.p != None:
-            return self.p.waitForNotifications(timeout);
+        if self.p:
+            return self.p.waitForNotifications(timeout)
         return False
 
     def __scan(self):
@@ -45,12 +64,10 @@ class BluePedal (btle.DefaultDelegate):
             try:
                 devices = btle.Scanner(interface).scan(5)
                 break
-            except btle.BTLEInterfaceInvalidError:
+            except btle.BTLEException:
                 continue
-            except btle.BTLEInterfaceSupportError:
-                continue
-            except btle.BTLEPermissionError:
-                raise ValueError('Permission for hci%d denied: please run as sudo' % (interface))
+                #raise ValueError('Permission for hci%d denied: please run as sudo' % (interface))
+                # TODO detect permission error
         else:
             raise ValueError('No valid bluetooth low energy interface found')
 

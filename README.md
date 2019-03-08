@@ -11,6 +11,8 @@
 Use the following to install on ubuntu 16:
 ```
 sudo apt-get install python3
+sudo apt-get install python3-dev
+sudo apt-get install libgtk2.0-dev
 sudo apt-get install sooperlooper
 sudo apt-get install liblo-dev
 sudo apt-get install jackd
@@ -18,34 +20,15 @@ sudo apt-get install jackd
 
 Then install the package using
 ```
-pip install git+https://github.com/basil-huber/BlueLooper.git --process-dependency-links
+pip install git+https://github.com/basil-huber/BlueLooper.git
 ```
 
 # Usage
-The configuration 
-
-Start a jackd server with your recording and playback device:
+Just launch the following command to start all programs:
 ```
-jackd -d alsa -P hw:Amplifier -C hw:Amplifier &
+bluelooper
 ```
-
-Start sooperlooper:
-```
-slgui &
-```
-
-Connect your recording and playback devices to sooperlooper:
-```
-jack_connect system:capture_1 sooperlooper:common_in_1
-jack_connect system:capture_2 sooperlooper:common_in_2
-jack_connect sooperlooper:common_out_1 system:playback_1
-jack_connect sooperlooper:common_out_2 system:playback_2
-```
-
-Then start the python application that connects the pedal to sooperlooper as super user:
-```bash
-sudo bluelooper
-```
+You might have to use `sudo`
 
 # Troubleshooting
 ## Connecting to pedal

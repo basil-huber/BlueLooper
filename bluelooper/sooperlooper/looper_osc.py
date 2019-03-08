@@ -27,11 +27,14 @@ class Looper:
         PAUSED = 14
         MUTED_OFF = 20  # undocumented
 
-    def __init__(self, target_ip="localhost", home_ip="localhost", home_port="9952", on_exit=None):
+    def __init__(self, target_ip="localhost", home_ip="localhost", home_port="9952", on_exit=None, on_connected=None):
         self.state = Looper.State.UNKNOWN
         self.ping_event = Event()
         self.state_event = Event()
+
+        # callbacks
         self.state_callback = None
+        self.on_connected = on_connected
 
         # OSC client and server
         self.home_server = liblo.ServerThread(home_port)
@@ -70,7 +73,6 @@ class Looper:
         self.jack.deactivate()
         self.jack.close()
 
-
     def connect_jack(self):
         # wait for all jack ports to be there
         port_list = ['system:capture_1', 'system:capture_2',
@@ -94,7 +96,10 @@ class Looper:
         while True:
             if self.ping(timeout):
                 break
-        print('connected')
+
+        if self.on_connected:
+            self.on_connected()
+
         self.request_state()
 
     def register_state_update(self):
